@@ -1,4 +1,3 @@
-import argparse
 import os
 import shutil
 import time
@@ -6,13 +5,25 @@ import random
 import numpy as np
 import math
 import sys
+import logging
 sys.path.append('../..')
 from utils import *
+from tensorflow import keras
 from NeuralNet import NeuralNet
 
 import argparse
 
 from .MastergoalNNet import MastergoalNNet as mnnet
+
+# Create a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+# Set up a file handler if you want to log to a file
+file_handler = logging.FileHandler('training.log')
+file_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 args = dotdict({
     'lr': 0.01,
@@ -22,6 +33,14 @@ args = dotdict({
     'cuda': False,
     'num_channels': 512,
 })
+
+class CustomLoggingCallback(keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        # Log the losses at the end of each epoch
+        logger.info(f"Epoch {epoch + 1}/{self.params['epochs']}")
+        logger.info(f"Loss: {logs.get('loss')}, Pi Loss: {logs.get('pi_loss')}, V Loss: {logs.get('v_loss')}")
+        logger.info(f"Pi Loss: {logs.get('pi_loss')}, V Loss: {logs.get('v_loss')}")
 
 class NNetWrapper(NeuralNet):
     def __init__(self, game):
@@ -37,7 +56,18 @@ class NNetWrapper(NeuralNet):
         input_boards = np.asarray(input_boards)
         target_pis = np.asarray(target_pis)
         target_vs = np.asarray(target_vs)
-        self.nnet.model.fit(x = input_boards, y = [target_pis, target_vs], batch_size = args.batch_size, epochs = args.epochs)
+
+        # Initialize the logging callback
+        logging_callback = CustomLoggingCallback()
+
+        # Train the model with the logging callback
+        self.nnet.model.fit(
+            x=input_boards, 
+            y=[target_pis, target_vs], 
+            batch_size=args.batch_size, 
+            epochs=args.epochs,
+            callbacks=[logging_callback]  # Add the callback here
+        )
 
     def predict(self, board):
         """

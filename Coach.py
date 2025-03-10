@@ -117,6 +117,7 @@ class Coach():
                 trainExamples.extend(e)
             shuffle(trainExamples)
 
+            
             # In AlphaGo Zero, the new player is accepted if it has a winrate of 55% against the previous version,
             # but in AlphaZero, there is just a single network continuously updated
             if self.args.arenaCompare:
@@ -162,6 +163,7 @@ class Coach():
 
     def loadTrainExamples(self):
         modelFile = os.path.join(self.args.load_folder_file[0], self.args.load_folder_file[1])
+        log.info(f"modeFile location entered: {modelFile}")
         examplesFile = modelFile + ".examples"
         if not os.path.isfile(examplesFile):
             log.warning(f'File "{examplesFile}" with trainExamples not found!')

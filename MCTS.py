@@ -127,8 +127,8 @@ class MCTS():
                 self.nodes[depth].Ps[s] /= sum_Ps_s  # Normalize the policy
             else:
                 # Handle edge case where no valid moves are available
-                log.error("All valid moves were masked, normalizing equally.")
-                #print(valids)
+                #log.error("All valid moves were masked, normalizing equally.")
+                print("All valid moves were masked, normalizing equally.")
                 self.nodes[depth].Ps[s] = self.nodes[depth].Ps[s] + valids
                 self.nodes[depth].Ps[s] /= np.sum(self.nodes[depth].Ps[s])
 

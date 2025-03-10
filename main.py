@@ -30,7 +30,7 @@ args = dotdict({
 
     'checkpoint': './aa/',
     'load_model': False,
-    'load_folder_file': ('./new','checkpoint_1.pth.tar'),
+    'load_folder_file': ('./aa','checkpoint_0.pth.tar'),
     'starting_iteration': 1,    # Set to higher than 1 if resuming from a checkpoint
     'numItersForTrainExamplesHistory': 40,
     'verbose': True
